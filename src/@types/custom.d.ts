@@ -1,16 +1,11 @@
-import { Role } from '../enums/role.enum'
-
-export interface IAccessToken {
-  id: number
-  email: string
-  role: Role
-}
+import { Role } from '../common/enums/role.enum';
+import { IUserSession } from '../common/interfaces/session.interface';
 
 declare global {
   namespace Express {
     export interface Request {
-      requestId?: string
-      user?: IAccessToken
+      requestId?: string;
+      user?: IUserSession;
     }
   }
 }

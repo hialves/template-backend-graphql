@@ -1,0 +1,20 @@
+enum ValidateSmsCodeEnum {
+  PRE_CREATE_USER
+  LOGIN
+}
+
+input ValidateSmsCodeInput {
+  phone: String!
+  code: String!
+  validateFor: ValidateSmsCodeEnum!
+}
+
+type ValidResult {
+  valid: Boolean!
+}
+
+union ValidateSmsCodeResult = ValidationError | ValidResult
+
+type Query {
+  validateSmsCode(input: ValidateSmsCodeInput): ValidateSmsCodeResult
+}

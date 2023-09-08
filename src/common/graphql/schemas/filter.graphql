@@ -1,0 +1,60 @@
+enum OrderByDateEnum {
+  desc
+  asc
+}
+
+input OrderByFilterInput {
+  createdAt: OrderByDateEnum
+  updatedAt: OrderByDateEnum
+}
+
+input PaginatedInput {
+  skip: Int
+  take: Int
+}
+
+input FilterInput {
+  orderBy: OrderByFilterInput
+  skip: Int
+  take: Int
+}
+
+input StringFilterInput {
+  contains: String
+  endsWith: String
+  equals: String
+  in: [String]
+  not: String
+  notIn: [String]
+  search: String
+  startsWith: String
+}
+
+input IntFilterInput {
+  equals: Int
+  in: [Int]
+  not: Int
+  notIn: [Int]
+  search: Int
+  gt: Int
+  gte: Int
+  lt: Int
+  lte: Int
+}
+
+input FloatFilterInput {
+  equals: Float
+  in: [Float]
+  not: Float
+  notIn: [Float]
+  search: Float
+  gt: Float
+  gte: Float
+  lt: Float
+  lte: Float
+}
+
+input BooleanFilterInput {
+  equals: Boolean
+  not: Boolean
+}

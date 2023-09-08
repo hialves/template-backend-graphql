@@ -1,44 +1,42 @@
-import { Injectable, forwardRef, Inject } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
-import * as bcrypt from 'bcrypt'
 import { BaseService } from '../../common/service.repository'
-import { CreateAdminDto } from './dto/create-admin.dto'
+import { CreateAdminInput } from './dto/create-admin.input'
 import { Admin } from './entities/admin.entity'
-import { Role } from '../../enums/role.enum'
+import { Role } from '../../common/enums/role.enum'
 import { AuthService } from '../auth/auth.service'
+import { responseMessages } from '../../common/messages/response.messages'
+import { ID } from '../../@types'
+import { UpdateCustomerInput } from '../customer/dto/update-customer.input'
 
 @Injectable()
 export class AdminService extends BaseService<Admin> {
   constructor(
     @InjectRepository(Admin)
     private readonly repo: Repository<Admin>,
-    @Inject(forwardRef(() => AuthService))
     private authService: AuthService,
   ) {
     super(repo)
   }
 
-  async create(dto: CreateAdminDto) {
+  async create(input: CreateAdminInput) {
     await this.validateIfExists({
       key: 'email',
-      value: dto.email,
-      errorMessage: 'Email já cadastrado',
+      value: input.email,
+      errorMessage: responseMessages.user.emailConflictError,
     })
 
-    const hashedPassword = await this.authService.hashPassword(dto.password)
+    const hashedPassword = await this.authService.hashPassword(input.password)
 
     return this.repo.save({
-      ...dto,
+      ...input,
       password: hashedPassword,
       role: Role.SuperAdmin,
     })
   }
 
-  getCredentials(email: string) {
-    return this.repo.findOne({
-      where: { email },
-      select: ['id', 'email', 'password'],
-    })
+  async update(id: ID, input: UpdateCustomerInput) {
+    return this.repository.update(id, input)
   }
 }

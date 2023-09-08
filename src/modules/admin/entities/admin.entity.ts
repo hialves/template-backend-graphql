@@ -1,32 +1,32 @@
-import { Column, Entity } from 'typeorm'
-import { BaseEntity } from '../../../common/entity'
-import { Role } from '../../../enums/role.enum'
+import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { BaseEntity } from '../../../common/typeorm/base-entity';
+import { Field, ObjectType } from '@nestjs/graphql';
+import { Asset } from '../../asset/entities/asset.entity';
+import { ID } from '../../../@types';
+import { User } from '../../user/entities/user.entity';
 
+@ObjectType()
 @Entity('admin')
 export class Admin extends BaseEntity {
   @Column({ nullable: false })
-  name: string
-
-  @Column({ nullable: false, unique: true })
-  email: string
-
-  @Column({ nullable: false, select: false })
-  password: string
+  @Field()
+  name: string;
 
   @Column({ nullable: true })
-  photo?: string
+  @Field({ nullable: true })
+  assetId?: ID;
 
-  @Column({
-    type: 'enum',
-    enum: [Role.SuperAdmin, Role.Admin],
-    nullable: true,
-    default: Role.Admin,
-  })
-  role: Role
+  @OneToOne(() => Asset)
+  @JoinColumn()
+  @Field(() => Asset, { nullable: true })
+  asset?: Asset;
 
   @Column({ nullable: true })
-  recoverPasswordToken?: string
+  @Field({ nullable: true })
+  userId?: ID;
 
-  @Column('timestamp', { nullable: true })
-  recoverPasswordTokenExpire?: string
+  @OneToOne(() => User, { nullable: true, onDelete: 'SET NULL', onUpdate: 'CASCADE' })
+  @JoinColumn()
+  @Field(() => User, { nullable: true })
+  user?: User;
 }

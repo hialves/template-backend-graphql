@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { DeepPartial, DeleteResult, Repository } from 'typeorm'
-import { BaseEntity } from './entity'
+import { BaseEntity } from './typeorm/base-entity'
+import { ID } from '../@types'
 
 interface IValidateObject {
   key: string
@@ -9,8 +10,8 @@ interface IValidateObject {
 }
 
 @Injectable()
-export class BaseService<T> {
-  private entity: Repository<any>
+export class BaseService<T extends BaseEntity> {
+  private entity: Repository<T>
 
   constructor(entity: Repository<T>) {
     this.entity = entity
@@ -22,6 +23,10 @@ export class BaseService<T> {
 
   async findAll(query: any) {
     return this.entity.find({ where: query })
+  }
+
+  async findOne(id: ID) {
+    return this.entity.findOneBy({ id } as any)
   }
 
   async remove(id: number): Promise<DeleteResult> {
@@ -44,7 +49,7 @@ export class BaseService<T> {
     const { key, value, errorMessage } = validateObject
     const entity = await this.entity.findOne({
       where: { [key]: value },
-    })
+    } as any)
     if (entity) return errorMessage
     return false
   }

@@ -1,0 +1,38 @@
+type Asset implements Node {
+  id: ID!
+  source: String!
+  userId: String!
+}
+
+input CreateAssetInput {
+  id: ID
+}
+
+input UpdateAssetInput {
+  id: ID!
+}
+
+type AssetList implements PaginatedList {
+  items: [Asset!]!
+  totalItems: Int!
+}
+
+type Asset {
+  filename: String!
+  mimetype: String!
+  encoding: String!
+}
+
+type Query {
+  assets(filters: PaginatedInput): AssetList!
+  asset(id: ID!): Asset
+}
+
+union CreateAssetResult = Asset | ValidationError
+union UpdateAssetResult = Asset | ValidationError | NotFoundError
+union DeleteAssetResult = DefaultResult | NotFoundError
+
+type Mutation {
+  createAsset(input: CreateAssetInput!): CreateAssetResult!
+  deleteAsset(id: ID!): DeleteAssetResult!
+}

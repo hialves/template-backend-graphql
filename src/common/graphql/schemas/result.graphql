@@ -1,0 +1,40 @@
+interface Error {
+  message: String!
+}
+
+type DeleteResult implements Error {
+  success: Boolean!
+  message: String!
+}
+
+type DefaultResult implements Error {
+  success: Boolean!
+  message: String!
+}
+
+type ErrorResult implements Error {
+  success: Boolean!
+  message: String!
+}
+
+type SuccessResult implements Error {
+  success: Boolean!
+  message: String!
+}
+
+type NotFoundError implements Error {
+  message: String!
+  resourceId: String
+}
+
+type ValidationKey implements Error {
+  key: String!
+  message: String!
+}
+
+type ValidationError implements Error {
+  errors: [ValidationKey!]!
+  message: String!
+}
+
+union DeleteResourceResult = DefaultResult | NotFoundError

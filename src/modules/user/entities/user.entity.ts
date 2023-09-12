@@ -1,5 +1,6 @@
 import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
 import { Column, Entity, OneToMany } from 'typeorm';
+
 import { BaseEntity } from '../../../common/typeorm/base-entity';
 import { Role } from '../../../common/enums/role.enum';
 import { Session } from '../../session/entities/session.entity';

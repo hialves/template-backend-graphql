@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserInput } from './dto/create-user.input';
-import { EntityType, ID } from '../../@types';
+import { ID } from '../../@types';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { DeleteResult, NotFoundError, ValidationError } from '../../common/graphql/types/result-type';
+import { DeleteResult, NotFoundError } from '../../common/graphql/types/result-type';
 import { responseMessages } from '../../common/messages/response.messages';
-import { UserGql } from '../../common/graphql/types/entity-type';
-import { CommonValidator } from '../../common/validator/common-validator';
 import * as bcrypt from 'bcrypt';
 import { PaginatedList } from '../../common/dto/paginated-list';
 import { PaginatedInput } from '../../common/dto/filter-input';
@@ -21,16 +19,10 @@ export class UserService {
     private readonly repository: Repository<User>,
   ) {}
 
-  async create(input: CreateUserInput): Promise<UserGql | ValidationError> {
-    const errors = await CommonValidator.simpleValidate(input);
-    if (errors) return errors;
-
+  async create(input: CreateUserInput, repository: Repository<User> = this.repository): Promise<User> {
     const user = new User();
-    this.repository.merge(user, input);
-
-    const result = await this.repository.save(user);
-
-    return new UserGql(result);
+    repository.merge(user, input);
+    return repository.save(user);
   }
 
   async findAll(filters?: PaginatedInput): Promise<PaginatedList<User>> {
@@ -122,5 +114,10 @@ export class UserService {
       where: { email },
       select: ['id', 'email', 'password'],
     });
+  }
+
+  async updateEmail(id: ID, email: string) {
+    await this.repository.update(id, { email });
+    return this.findOne(id);
   }
 }

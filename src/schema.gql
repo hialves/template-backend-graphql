@@ -28,6 +28,11 @@ type DeleteResult {
   message: String!
 }
 
+type ValidationKey {
+  key: String!
+  message: String!
+}
+
 type Asset {
   id: Float!
   createdAt: String!
@@ -70,15 +75,23 @@ type Query {
 }
 
 type Mutation {
-  create(input: CreateAdminInput!): Admin!
+  createAdmin(input: CreateAdminInput!): CreateAdminResult!
   updateAdmin(input: UpdateAdminInput!): Admin!
   removeAdmin(id: Float!): DeleteResult!
-  login(input: LoginInput!): DefaultResult!
   createUser(input: CreateUserInput!): User!
   deleteUser(id: Int!): User!
+  updateUser(email: String!, id: Int!): User!
+  login(input: LoginInput!): DefaultResult!
   createCustomer(input: CreateCustomerInput!): Customer!
   updateCustomer(input: UpdateCustomerInput!): Customer!
   removeCustomer(id: Float!): DeleteResult!
+}
+
+union CreateAdminResult = Admin | ValidationError
+
+type ValidationError {
+  errors: [ValidationKey!]!
+  message: String!
 }
 
 input CreateAdminInput {
@@ -94,16 +107,16 @@ input UpdateAdminInput {
   id: Float!
 }
 
-input LoginInput {
-  email: String!
-  password: String!
-  device: String
-}
-
 input CreateUserInput {
   email: String!
   password: String!
   role: Role!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+  device: String
 }
 
 input CreateCustomerInput {

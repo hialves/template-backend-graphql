@@ -4,7 +4,6 @@ import { Field, ObjectType, createUnionType } from '@nestjs/graphql';
 
 @ObjectType()
 export class DefaultResult {
-  public __typename = 'DefaultResult';
   @Field()
   public success: boolean;
 
@@ -50,29 +49,33 @@ export class SuccessResult extends DefaultResult {
 }
 
 export class NotFoundError {
-  public readonly __typename = 'NotFoundError';
-
   constructor(
     public message: string,
     public resourceId: string = '',
   ) {}
 }
 
+@ObjectType()
 export class ValidationKey {
-  constructor(
-    public key: string,
-    public message: string,
-  ) {}
+  @Field()
+  public key: string;
+  @Field()
+  public message: string;
+
+  constructor(key: string, message: string) {
+    this.key = key;
+    this.message = message;
+  }
 }
 
+@ObjectType()
 export class ValidationError {
-  public readonly __typename = 'ValidationError';
+  @Field(() => [ValidationKey])
   public errors: Array<ValidationKey>;
+  @Field()
+  public message: string;
 
-  constructor(
-    errors: Array<ClassValidatorError | ValidationKey>,
-    public message: string = responseMessages.form.someErrors,
-  ) {
+  constructor(errors: Array<ClassValidatorError | ValidationKey>, message: string = responseMessages.form.someErrors) {
     this.errors = errors.map((error) => {
       if (error instanceof ValidationKey) {
         return error;
@@ -80,6 +83,7 @@ export class ValidationError {
 
       return new ValidationKey(error.property, Object.values(error.constraints).join(', '));
     });
+    this.message = message;
   }
 }
 

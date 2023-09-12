@@ -2,7 +2,6 @@ import 'dotenv/config';
 import { DataSource } from 'typeorm';
 import { databaseConfig } from './config/database';
 import { User } from './modules/user/entities/user.entity';
-import * as bcrypt from 'bcrypt';
 import { Role } from './common/enums/role.enum';
 import { Admin } from './modules/admin/entities/admin.entity';
 import path from 'path';
@@ -18,7 +17,7 @@ async function seed() {
 
   const user = await userRepository.save({
     email: process.env.SUPERADMIN_EMAIL,
-    password: bcrypt.hashSync(process.env.SUPERADMIN_PASSWORD, 12),
+    password: process.env.SUPERADMIN_PASSWORD,
     role: Role.SuperAdmin,
   });
   await adminRepository.save({

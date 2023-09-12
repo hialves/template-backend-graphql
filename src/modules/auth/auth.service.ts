@@ -64,8 +64,4 @@ export class AuthService {
 
     return new SuccessResult(responseMessages.auth.loginSuccess);
   }
-
-  async hashPassword(password: string) {
-    return bcrypt.hash(password, 12);
-  }
 }

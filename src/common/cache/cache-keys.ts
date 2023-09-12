@@ -1,3 +1,4 @@
+import { ID } from '../../@types';
 import { FilterWithoutDefaultValuesInput } from '../dto/filter-input';
 
 export const cacheKeys = {
@@ -17,5 +18,8 @@ export const cacheKeys = {
   },
   auth: {
     session: (token: string) => `SESSION/${token}`,
+  },
+  session: {
+    userById: (userId: ID) => `SESSION_USER_BY_ID/${userId}`,
   },
 };

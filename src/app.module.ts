@@ -16,6 +16,8 @@ import { SessionModule } from './modules/session/session.module';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './common/guards/roles.guard';
 import { AuthGuard } from './modules/auth/auth.guard';
+import { CacheModule } from './connections/cache/cache.module';
+import { UserSubscriber } from './subscribers/user.subscriber';
 
 @Module({
   imports: [
@@ -38,8 +40,14 @@ import { AuthGuard } from './modules/auth/auth.guard';
     MailModule,
     UserModule,
     SessionModule,
+    CacheModule,
   ],
   controllers: [AppController],
-  providers: [AppService, { provide: APP_GUARD, useClass: AuthGuard }, { provide: APP_GUARD, useClass: RolesGuard }],
+  providers: [
+    AppService,
+    { provide: APP_GUARD, useClass: AuthGuard },
+    { provide: APP_GUARD, useClass: RolesGuard },
+    UserSubscriber,
+  ],
 })
 export class AppModule {}

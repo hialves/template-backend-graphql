@@ -1,5 +1,5 @@
-import 'dotenv/config'
-import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions'
+import 'dotenv/config';
+import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
 export const databaseConfig: PostgresConnectionOptions = {
   username: process.env.TYPEORM_USERNAME,
@@ -13,4 +13,4 @@ export const databaseConfig: PostgresConnectionOptions = {
   synchronize: true,
   migrationsRun: true,
   type: 'postgres',
-}
+};

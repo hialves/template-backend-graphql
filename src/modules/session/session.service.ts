@@ -74,8 +74,8 @@ export class SessionService {
 
     if (!session) return;
 
-    const { id, expiresAt, valid } = session;
-    await this.setCacheSession(token, { id, token, expiresAt, valid });
+    const { id, expiresAt, valid, userId } = session;
+    await this.setCacheSession(token, { id, token, expiresAt, valid, userId });
     return session;
   }
 

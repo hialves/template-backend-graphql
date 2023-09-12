@@ -1,42 +1,46 @@
-import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
-import { BaseService } from '../../common/service.repository'
-import { CreateAdminInput } from './dto/create-admin.input'
-import { Admin } from './entities/admin.entity'
-import { Role } from '../../common/enums/role.enum'
-import { AuthService } from '../auth/auth.service'
-import { responseMessages } from '../../common/messages/response.messages'
-import { ID } from '../../@types'
-import { UpdateCustomerInput } from '../customer/dto/update-customer.input'
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { BaseService } from '../../common/service.repository';
+import { CreateAdminInput } from './dto/create-admin.input';
+import { Admin } from './entities/admin.entity';
+import { Role } from '../../common/enums/role.enum';
+import { ID } from '../../@types';
+import { UpdateCustomerInput } from '../customer/dto/update-customer.input';
+import { UserService } from '../user/user.service';
+import { User } from '../user/entities/user.entity';
+import { CommonValidator } from '../../common/validator/common-validator';
+import { CreateAdminResult } from './unions/create-admin.union';
 
 @Injectable()
 export class AdminService extends BaseService<Admin> {
   constructor(
     @InjectRepository(Admin)
-    private readonly repo: Repository<Admin>,
-    private authService: AuthService,
+    private readonly repository: Repository<Admin>,
+    private userService: UserService,
+    private dataSource: DataSource,
   ) {
-    super(repo)
+    super(repository);
   }
 
-  async create(input: CreateAdminInput) {
-    await this.validateIfExists({
-      key: 'email',
-      value: input.email,
-      errorMessage: responseMessages.user.emailConflictError,
-    })
+  async create(input: CreateAdminInput): Promise<typeof CreateAdminResult> {
+    const { email, password } = input;
+    const errors = await CommonValidator.simpleValidate(input);
+    if (errors) return errors;
 
-    const hashedPassword = await this.authService.hashPassword(input.password)
+    const result = await this.dataSource.transaction('READ UNCOMMITTED', async (entityManager) => {
+      const user = await this.userService.create(
+        { email, password, role: Role.Admin },
+        entityManager.getRepository(User),
+      );
+      return entityManager.getRepository(Admin).save({ name: input.name, user });
+    });
 
-    return this.repo.save({
-      ...input,
-      password: hashedPassword,
-      role: Role.SuperAdmin,
-    })
+    return this.repository.create(result);
   }
 
   async update(id: ID, input: UpdateCustomerInput) {
-    return this.repository.update(id, input)
+    await this.repository.update(id, input);
+    return this.findOne(id);
   }
 }

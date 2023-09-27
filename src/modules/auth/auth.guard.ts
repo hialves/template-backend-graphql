@@ -5,6 +5,7 @@ import { IS_PUBLIC_KEY } from '../../decorators/public.decorator';
 import { SessionService } from '../session/session.service';
 import { Request } from 'express';
 import { responseMessages } from '../../common/messages/response.messages';
+import { IUserSession } from '../../common/interfaces/session.interface';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -18,16 +19,23 @@ export class AuthGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
-    if (isPublic) {
-      return true;
-    }
+
     const gqlContext = GqlExecutionContext.create(context);
     const request = gqlContext.getContext().req as Request;
     const token = this.sessionService.getBearerToken(request);
+    let session: IUserSession;
+
+    if (token) {
+      session = await this.sessionService.getSession(token);
+      if (session) request.session = session;
+    }
+
+    if (isPublic) {
+      return true;
+    }
+
     if (!token) throw new UnauthorizedException(responseMessages.auth.unauthorized);
-    const session = await this.sessionService.getSession(token);
     if (!session) throw new UnauthorizedException(responseMessages.auth.unauthorized);
-    request.session = session;
 
     return true;
   }

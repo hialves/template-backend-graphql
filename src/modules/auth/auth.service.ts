@@ -5,12 +5,18 @@ import dayjs from 'dayjs';
 
 import { MailService } from '../../mail/mail.service';
 import { UserService } from '../user/user.service';
-import { InvalidCredentialsError, NotFoundError, SuccessResult } from '../../common/graphql/types/result-type';
+import {
+  DeleteResult,
+  InvalidCredentialsError,
+  NotFoundError,
+  SuccessResult,
+} from '../../common/graphql/types/result-type';
 import { responseMessages } from '../../common/messages/response.messages';
 import { LoginInput } from './dto/login.input';
 import { SessionService } from '../session/session.service';
 import { apiConfig } from '../../config/api.config';
 import { Response } from 'express';
+import { IUserSession } from '../../common/interfaces/session.interface';
 
 @Injectable()
 export class AuthService {
@@ -63,5 +69,9 @@ export class AuthService {
     response.header(authTokenHeaderKey, authToken);
 
     return new SuccessResult(responseMessages.auth.loginSuccess);
+  }
+
+  async logout(session: IUserSession): Promise<DeleteResult> {
+    return this.sessionService.deleteSession(session);
   }
 }

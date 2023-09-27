@@ -12,6 +12,7 @@ import { Request } from 'express';
 import { CacheService } from '../../connections/cache/cache.service';
 import { cacheKeys } from '../../common/cache/cache-keys';
 import { IUserSession } from '../../common/interfaces/session.interface';
+import { DeleteResult } from '../../common/graphql/types/result-type';
 
 @Injectable()
 export class SessionService {
@@ -79,8 +80,20 @@ export class SessionService {
     return session;
   }
 
+  async deleteSession(session: IUserSession): Promise<DeleteResult> {
+    try {
+      await this.repository.delete({ id: session.id });
+      const key = this.getCacheKey(session.token);
+      await this.cache.del(key);
+
+      return new DeleteResult(true);
+    } catch (error) {
+      return new DeleteResult(false);
+    }
+  }
+
   private getCachedSession(token: string): Promise<IUserSession | undefined> {
-    const key = cacheKeys.auth.session(token);
+    const key = this.getCacheKey(token);
     return this.cache.get(key);
   }
 
@@ -90,7 +103,11 @@ export class SessionService {
   }
 
   private setCacheSession(token: string, session: IUserSession) {
-    const key = cacheKeys.auth.session(token);
+    const key = this.getCacheKey(token);
     return this.cache.set(key, session);
+  }
+
+  private getCacheKey(token: string) {
+    return cacheKeys.auth.session(token);
   }
 }

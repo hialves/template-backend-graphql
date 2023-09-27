@@ -22,7 +22,7 @@ export class CustomerResolver {
   @Roles(Role.SuperAdmin)
   @Query(() => [Customer])
   customers() {
-    return this.service.findAll({})
+    return this.service.findAll();
   }
 
   @Roles(Role.SuperAdmin, Role.Manager, Role.Customer)

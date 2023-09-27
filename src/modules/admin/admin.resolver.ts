@@ -23,7 +23,7 @@ export class AdminResolver {
   @Roles(Role.SuperAdmin)
   @Query(() => [Admin])
   admins() {
-    return this.service.findAll({});
+    return this.service.findAll();
   }
 
   @Roles(Role.SuperAdmin)

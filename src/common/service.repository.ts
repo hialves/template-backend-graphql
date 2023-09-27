@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { DeleteResult, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { BaseEntity } from './typeorm/base-entity';
 import { ID } from '../@types';
+import { DeleteResult } from './graphql/types/result-type';
 
 @Injectable()
 export class BaseService<T extends BaseEntity> {
@@ -11,7 +12,7 @@ export class BaseService<T extends BaseEntity> {
     this.entity = entity;
   }
 
-  async findAll(query: any) {
+  async findAll(query: any = {}) {
     return this.entity.find({ where: query });
   }
 
@@ -20,6 +21,7 @@ export class BaseService<T extends BaseEntity> {
   }
 
   async remove(id: number): Promise<DeleteResult> {
-    return this.entity.delete(id);
+    const result = await this.entity.delete(id);
+    return new DeleteResult(result.affected > 0);
   }
 }

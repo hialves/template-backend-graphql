@@ -72,7 +72,10 @@ type Query {
   user(id: Int!): User!
   customers: [Customer!]!
   customer(id: Float!): Customer!
+  me: Profile!
 }
+
+union Profile = Admin | Customer
 
 type Mutation {
   createAdmin(input: CreateAdminInput!): CreateAdminResult!
@@ -82,6 +85,7 @@ type Mutation {
   deleteUser(id: Int!): User!
   updateUser(email: String!, id: Int!): User!
   login(input: LoginInput!): DefaultResult!
+  logout: DefaultResult!
   createCustomer(input: CreateCustomerInput!): Customer!
   updateCustomer(input: UpdateCustomerInput!): Customer!
   removeCustomer(id: Float!): DeleteResult!

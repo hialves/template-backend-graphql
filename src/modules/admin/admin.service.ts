@@ -43,4 +43,8 @@ export class AdminService extends BaseService<Admin> {
     await this.repository.update(id, input);
     return this.findOne(id);
   }
+
+  getByUserId(userId: ID): Promise<Admin | null> {
+    return this.repository.findOneBy({ userId });
+  }
 }

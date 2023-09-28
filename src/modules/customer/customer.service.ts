@@ -28,4 +28,8 @@ export class CustomerService extends BaseService<Customer> {
   async update(id: ID, input: UpdateCustomerInput) {
     return this.repository.update(id, input);
   }
+
+  getByUserId(userId: ID): Promise<Customer | null> {
+    return this.repository.findOneBy({ userId });
+  }
 }

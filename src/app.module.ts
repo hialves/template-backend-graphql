@@ -18,6 +18,7 @@ import { RolesGuard } from './common/guards/roles.guard';
 import { AuthGuard } from './modules/auth/auth.guard';
 import { CacheModule } from './connections/cache/cache.module';
 import { UserSubscriber } from './subscribers/user.subscriber';
+import { ProfileModule } from './modules/profile/profile.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { UserSubscriber } from './subscribers/user.subscriber';
     UserModule,
     SessionModule,
     CacheModule,
+    ProfileModule,
   ],
   controllers: [AppController],
   providers: [
